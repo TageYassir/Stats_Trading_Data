@@ -1,7 +1,8 @@
-"use client";
+"use client";// Note: this is typically for Next.js, but harmless in Vite
 
-import { LineChart } from "@mui/x-charts/LineChart";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import { LineChart } from "@mui/x-charts";
+
 
 export default function Page() {
   const [data, setData] = useState(null);
