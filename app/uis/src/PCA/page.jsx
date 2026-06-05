@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { BarChart } from '@mui/x-charts/BarChart';
 
-export default function PCA() {
-  // New Array-based state for symbols
+export default function PCAPage() {
   const [symbols, setSymbols] = useState(['AAPL', 'MSFT', 'GOOGL', 'AMZN']);
   const [newSymbol, setNewSymbol] = useState('');
   
@@ -13,7 +12,6 @@ export default function PCA() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Handle adding a new symbol to the list
   const handleAddSymbol = (e) => {
     e.preventDefault();
     const cleanSymbol = newSymbol.trim().toUpperCase();
@@ -23,7 +21,6 @@ export default function PCA() {
     setNewSymbol('');
   };
 
-  // Handle removing a symbol from the list
   const handleRemoveSymbol = (symToRemove) => {
     setSymbols(symbols.filter(sym => sym !== symToRemove));
   };
@@ -42,11 +39,7 @@ export default function PCA() {
       const response = await fetch('http://localhost:8000/api/pca', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          symbols: symbols,
-          period: period,
-          interval: interval
-        }),
+        body: JSON.stringify({ symbols, period, interval }),
       });
 
       if (!response.ok) {
@@ -68,52 +61,44 @@ export default function PCA() {
     }
   };
 
-  // Chart 1: Variance Data
   const chartLabels = pcaResults?.explained_variance_ratio?.map((_, idx) => `PC ${idx + 1}`) || [];
   const chartVarianceValues = pcaResults?.explained_variance_ratio?.map((val) => Number((val * 100).toFixed(2))) || [];
-
-  // Chart 2: PC1 Loadings (How much each stock contributes to the main trend)
   const pc1Weights = pcaResults?.components?.[0]?.map((val) => Number(val.toFixed(3))) || [];
   const validSymbols = pcaResults?.symbols || [];
 
+  const inputStyle = { padding: '10px 12px', background: '#0f172a', border: '1px solid #334155', borderRadius: '8px', color: '#fff', fontSize: '14px', outline: 'none' };
+
   return (
     <div>
-      <h2 style={{ marginTop: 0, fontSize: '20px', color: '#f8fafc' }}>Multi-Pair PCA Analysis Terminal</h2>
+      <h2 style={{ marginTop: 0, fontSize: '22px', color: '#38bdf8' }}>Workspace 02: Multi-Pair PCA Analysis Terminal</h2>
       <p style={{ color: '#94a3b8', fontSize: '14px', marginBottom: '24px' }}>Analyze overlapping trend components across a selection of ticker fields.</p>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '24px' }}>
+      {/* Control Panel Card */}
+      <div style={{ background: '#0f172a', padding: '24px', borderRadius: '12px', border: '1px solid #334155', marginBottom: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
         
-        {/* Symbol Input Area */}
+        {/* Target Assets Sub-Section */}
         <div>
-          <label style={{ display: 'block', fontSize: '12px', color: '#94a3b8', marginBottom: '6px' }}>Target Assets</label>
-          
-          {/* Symbol Tags/Pills */}
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '10px' }}>
+          <label style={{ display: 'block', fontSize: '12px', color: '#94a3b8', marginBottom: '8px', fontWeight: 'bold' }}>Target Assets</label>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '12px' }}>
             {symbols.map(sym => (
-              <div key={sym} style={{ background: '#3b82f6', color: '#fff', padding: '4px 10px', borderRadius: '14px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <div key={sym} style={{ background: '#38bdf8', color: '#0f172a', padding: '6px 12px', borderRadius: '16px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 'bold' }}>
                 {sym}
-                <button onClick={() => handleRemoveSymbol(sym)} style={{ background: 'transparent', border: 'none', color: '#fff', cursor: 'pointer', padding: 0, fontSize: '14px', fontWeight: 'bold' }}>×</button>
+                <button onClick={() => handleRemoveSymbol(sym)} style={{ background: 'rgba(0,0,0,0.15)', border: 'none', borderRadius: '50%', color: '#0f172a', cursor: 'pointer', width: '18px', height: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 'bold' }}>×</button>
               </div>
             ))}
           </div>
 
-          <form onSubmit={handleAddSymbol} style={{ display: 'flex', gap: '8px' }}>
-            <input
-              type="text"
-              placeholder="Add symbol (e.g., TSLA)"
-              value={newSymbol}
-              onChange={(e) => setNewSymbol(e.target.value)}
-              style={{ backgroundColor: '#334155', border: '1px solid #475569', color: '#fff', padding: '10px', borderRadius: '6px', flex: 1, fontFamily: 'monospace' }}
-            />
-            <button type="submit" style={{ backgroundColor: '#475569', color: '#fff', border: 'none', borderRadius: '6px', padding: '0 16px', cursor: 'pointer' }}>Add Pair</button>
+          <form onSubmit={handleAddSymbol} style={{ display: 'flex', gap: '8px', maxWidth: '400px' }}>
+            <input type="text" placeholder="Add symbol (e.g., TSLA)" value={newSymbol} onChange={(e) => setNewSymbol(e.target.value)} style={{ ...inputStyle, flex: 1, fontFamily: 'monospace' }} />
+            <button type="submit" style={{ backgroundColor: '#334155', color: '#fff', border: '1px solid #475569', borderRadius: '8px', padding: '0 20px', cursor: 'pointer', fontWeight: 'bold', fontSize: '14px' }}>Add Pair</button>
           </form>
         </div>
 
-        {/* Timeframe Controls */}
-        <div style={{ display: 'flex', gap: '16px' }}>
-          <div style={{ flex: '1' }}>
-            <label style={{ display: 'block', fontSize: '12px', color: '#94a3b8', marginBottom: '6px' }}>Period Scope</label>
-            <select value={period} onChange={(e) => setPeriod(e.target.value)} style={{ backgroundColor: '#334155', border: '1px solid #475569', color: '#fff', padding: '10px', borderRadius: '6px', width: '100%' }}>
+        {/* Scope Matrix Selection */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', alignItems: 'end' }}>
+          <div>
+            <label style={{ display: 'block', fontSize: '12px', color: '#94a3b8', marginBottom: '6px', fontWeight: 'bold' }}>Period Scope</label>
+            <select value={period} onChange={(e) => setPeriod(e.target.value)} style={{ ...inputStyle, width: '100%' }}>
               <option value="1mo">1 Month</option>
               <option value="3mo">3 Months</option>
               <option value="6mo">6 Months</option>
@@ -121,57 +106,59 @@ export default function PCA() {
               <option value="2y">2 Years</option>
             </select>
           </div>
-          <div style={{ flex: '1' }}>
-            <label style={{ display: 'block', fontSize: '12px', color: '#94a3b8', marginBottom: '6px' }}>Interval Bar</label>
-            <select value={interval} onChange={(e) => setIntervalValue(e.target.value)} style={{ backgroundColor: '#334155', border: '1px solid #475569', color: '#fff', padding: '10px', borderRadius: '6px', width: '100%' }}>
+          <div>
+            <label style={{ display: 'block', fontSize: '12px', color: '#94a3b8', marginBottom: '6px', fontWeight: 'bold' }}>Interval Bar</label>
+            <select value={interval} onChange={(e) => setIntervalValue(e.target.value)} style={{ ...inputStyle, width: '100%' }}>
               <option value="1h">1 Hour (1h)</option>
               <option value="4h">4 Hours (4h)</option>
               <option value="1d">Daily (1d)</option>
               <option value="1wk">Weekly (1wk)</option>
             </select>
           </div>
+          <button 
+            onClick={handleComputePCA} 
+            disabled={loading} 
+            style={{ backgroundColor: '#38bdf8', color: '#0f172a', border: 'none', borderRadius: '8px', padding: '12px 24px', cursor: loading ? 'not-allowed' : 'pointer', fontWeight: 'bold', opacity: loading ? 0.7 : 1, transition: 'all 0.2s', height: '42px' }}
+          >
+            {loading ? 'Factoring Components...' : 'Extract Covariance Structure'}
+          </button>
         </div>
       </div>
 
-      <button
-        onClick={handleComputePCA}
-        disabled={loading}
-        style={{ backgroundColor: '#10b981', color: '#fff', border: 'none', borderRadius: '6px', padding: '12px 24px', cursor: loading ? 'not-allowed' : 'pointer', fontWeight: '600', opacity: loading ? 0.7 : 1 }}
-      >
-        {loading ? 'Factoring Components...' : 'Extract Covariance Structure'}
-      </button>
+      {error && <div style={{ color: '#f87171', padding: '12px', backgroundColor: '#7f1d1d40', borderRadius: '8px', border: '1px solid #7f1d1d', marginBottom: '24px' }}>{error}</div>}
 
-      {error && <div style={{ color: '#f87171', padding: '12px', backgroundColor: '#7f1d1d40', borderRadius: '6px', border: '1px solid #7f1d1d', marginTop: '20px' }}>{error}</div>}
-
+      {/* Results Workspace Graphs */}
       {pcaResults && (
-        <div style={{ marginTop: '25px', padding: '20px', backgroundColor: '#0f172a', borderRadius: '8px', border: '1px solid #334155' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '24px' }}>
           
-          {/* CHART 1: Explained Variance */}
-          <h3 style={{ margin: '0 0 6px 0', color: '#38bdf8', fontSize: '16px' }}>PCA Factor Variance Distribution</h3>
-          <p style={{ color: '#94a3b8', fontSize: '12px', margin: '0 0 16px 0' }}>Shows how much total market movement is explained by each Principal Component.</p>
-          
-          <div style={{ width: '100%', height: 260, background: '#1e293b', borderRadius: '6px', padding: '10px', boxSizing: 'border-box', marginBottom: '30px' }}>
-            <BarChart
-              xAxis={[{ data: chartLabels, scaleType: 'band', tickLabelStyle: { fill: '#94a3b8' } }]}
-              series={[{ data: chartVarianceValues, label: 'Explained Variance (%)', color: '#3b82f6' }]}
-              height={240}
-              margin={{ top: 20, bottom: 30, left: 40, right: 10 }}
-              slotProps={{ legend: { labelStyle: { fill: '#f8fafc' } } }}
-            />
+          {/* Chart 1 Card */}
+          <div style={{ padding: '24px', backgroundColor: '#0f172a', borderRadius: '12px', border: '1px solid #334155' }}>
+            <h3 style={{ margin: '0 0 4px 0', color: '#38bdf8', fontSize: '16px', fontWeight: 'bold' }}>PCA Factor Variance Distribution</h3>
+            <p style={{ color: '#94a3b8', fontSize: '13px', margin: '0 0 20px 0' }}>Shows how much total market movement is explained by each Principal Component.</p>
+            <div style={{ width: '100%', height: 260, background: '#1e293b', borderRadius: '8px', padding: '12px', boxSizing: 'border-box' }}>
+              <BarChart 
+                xAxis={[{ data: chartLabels, scaleType: 'band', tickLabelStyle: { fill: '#94a3b8', fontSize: 11 } }]} 
+                series={[{ data: chartVarianceValues, label: 'Explained Variance (%)', color: '#38bdf8' }]} 
+                height={240} 
+                margin={{ top: 20, bottom: 30, left: 40, right: 10 }} 
+                slotProps={{ legend: { labelStyle: { fill: '#f8fafc', fontSize: 12 } } }} 
+              />
+            </div>
           </div>
 
-          {/* CHART 2: PC1 Loadings (Suggested Result) */}
-          <h3 style={{ margin: '0 0 6px 0', color: '#10b981', fontSize: '16px' }}>Component 1 (PC1) Asset Weights</h3>
-          <p style={{ color: '#94a3b8', fontSize: '12px', margin: '0 0 16px 0' }}>Identifies which specific assets are driving the primary market trend (PC1).</p>
-
-          <div style={{ width: '100%', height: 260, background: '#1e293b', borderRadius: '6px', padding: '10px', boxSizing: 'border-box', marginBottom: '20px' }}>
-             <BarChart
-              xAxis={[{ data: validSymbols, scaleType: 'band', tickLabelStyle: { fill: '#94a3b8' } }]}
-              series={[{ data: pc1Weights, label: 'PC1 Loading Weight', color: '#10b981' }]}
-              height={240}
-              margin={{ top: 20, bottom: 30, left: 40, right: 10 }}
-              slotProps={{ legend: { labelStyle: { fill: '#f8fafc' } } }}
-            />
+          {/* Chart 2 Card */}
+          <div style={{ padding: '24px', backgroundColor: '#0f172a', borderRadius: '12px', border: '1px solid #334155' }}>
+            <h3 style={{ margin: '0 0 4px 0', color: '#10b981', fontSize: '16px', fontWeight: 'bold' }}>Component 1 (PC1) Asset Weights</h3>
+            <p style={{ color: '#94a3b8', fontSize: '13px', margin: '0 0 20px 0' }}>Identifies which specific assets are driving the primary market trend (PC1).</p>
+            <div style={{ width: '100%', height: 260, background: '#1e293b', borderRadius: '8px', padding: '12px', boxSizing: 'border-box' }}>
+               <BarChart 
+                 xAxis={[{ data: validSymbols, scaleType: 'band', tickLabelStyle: { fill: '#94a3b8', fontSize: 11 } }]} 
+                 series={[{ data: pc1Weights, label: 'PC1 Loading Weight', color: '#10b981' }]} 
+                 height={240} 
+                 margin={{ top: 20, bottom: 30, left: 40, right: 10 }} 
+                 slotProps={{ legend: { labelStyle: { fill: '#f8fafc', fontSize: 12 } } }} 
+               />
+            </div>
           </div>
 
         </div>
