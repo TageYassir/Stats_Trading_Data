@@ -8,9 +8,11 @@ import logging
 try:
     from .fetch_yahoo.fetch_yahoo import fetch_yahoo_bp
     from .PCA.pca import pca_bp
+    from .indicators.indicators import indicators_bp
 except Exception:
     from fetch_yahoo.fetch_yahoo import fetch_yahoo_bp
     from PCA.pca import pca_bp
+    from indicators.indicators import indicators_bp
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -25,6 +27,7 @@ def create_app():
     # Register your existing blueprints
     app.register_blueprint(fetch_yahoo_bp)
     app.register_blueprint(pca_bp)
+    app.register_blueprint(indicators_bp)
     
     # Health check (already present)
     @app.route('/api/health', methods=['GET'])
