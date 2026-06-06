@@ -3,6 +3,7 @@ import HomePage from './home/page'; // Adjust path if needed
 import DataPage from './data/page';
 import PCAPage from './PCA/page';
 import CorrelationPage from './correlation/page';
+import StatisticsPage from './statistics/page';
 
 export default function App() {
   const [status, setStatus] = useState('loading');
@@ -17,11 +18,12 @@ export default function App() {
   }, []);
 
   const navItems = [
-    { id: 'home', label: 'Home', color: '#f8fafc' },
-    { id: 'data', label: '1. Data Ingestion', color: '#10b981' },
-    { id: 'pca', label: '2. PCA Engine', color: '#38bdf8' },
-    { id: 'correlation', label: '3. Correlation Matrix', color: '#a855f7' }
-  ];
+  { id: 'home', label: 'Home', color: '#f8fafc' },
+  { id: 'data', label: '1. Data Ingestion', color: '#10b981' },
+  { id: 'pca', label: '2. PCA Engine', color: '#38bdf8' },
+  { id: 'correlation', label: '3. Correlation Matrix', color: '#a855f7' },
+  { id: 'statistics', label: '4. Statistics', color: '#f59e0b' }
+];
 
   return (
     <div style={{ backgroundColor: '#0f172a', color: '#f8fafc', minHeight: '100vh', padding: '32px', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
@@ -68,6 +70,7 @@ export default function App() {
         {activeTab === 'data' && <DataPage />}
         {activeTab === 'pca' && <PCAPage />}
         {activeTab === 'correlation' && <CorrelationPage />}
+        {activeTab === 'statistics' && <StatisticsPage />}
       </main>
     </div>
   );
