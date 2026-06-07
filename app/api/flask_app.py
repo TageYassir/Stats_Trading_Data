@@ -1,5 +1,6 @@
 from flask import Flask, jsonify
 from flask_cors import CORS
+from prediction.prediction import prediction_bp
 
 try:
     from .fetch_yahoo.fetch_yahoo import fetch_yahoo_bp
@@ -15,8 +16,8 @@ except Exception:
 def create_app():
     app = Flask(__name__)
     
-    # This fixes your CORS errors completely for Flask
-    CORS(app, resources={r"/api/*": {"origins": "*"}})
+    # Allow cross-origin requests for all backend routes
+    CORS(app, resources={r"/*": {"origins": "*"}})
     
     # Register blueprints
     app.register_blueprint(fetch_yahoo_bp)
@@ -24,6 +25,10 @@ def create_app():
     app.register_blueprint(indicators_bp)
     app.register_blueprint(statistics_bp)
     
+    app.register_blueprint(
+    prediction_bp,
+    url_prefix="/prediction"
+)
     # Fixes the 404 / Unexpected token '<' error
     @app.route('/api/health', methods=['GET'])
     def health():

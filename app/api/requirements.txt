@@ -5,3 +5,4 @@ Flask
 requests
 scikit-learn
 numpy
+flask_cors
