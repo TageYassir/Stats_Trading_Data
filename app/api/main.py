@@ -4,17 +4,23 @@ import yfinance as yf
 import pandas as pd
 import logging
 
+
+
+
+
 # Import your existing blueprints (they should work as before)
 try:
     from .fetch_yahoo.fetch_yahoo import fetch_yahoo_bp
     from .PCA.pca import pca_bp
     from .indicators.indicators import indicators_bp
     from .statistics.statistics import statistics_bp
+    from .prediction.prediction import prediction_bp
 except Exception:
     from fetch_yahoo.fetch_yahoo import fetch_yahoo_bp
     from PCA.pca import pca_bp
     from indicators.indicators import indicators_bp
     from statistics.statistics import statistics_bp
+    from prediction.prediction import prediction_bp
 # Setup logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -30,7 +36,8 @@ def create_app():
     app.register_blueprint(pca_bp)
     app.register_blueprint(indicators_bp)
     app.register_blueprint(statistics_bp)
-    
+    app.register_blueprint(prediction_bp)
+
     # Health check (already present)
     @app.route('/api/health', methods=['GET'])
     def health():
