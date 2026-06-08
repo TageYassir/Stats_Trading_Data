@@ -29,14 +29,17 @@ def create_app():
     app = Flask(__name__)
     
     # CORS - allow your React frontend
-    CORS(app, resources={r"/api/*": {"origins": "http://localhost:5173"}})
+    CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}})
     
     # Register your existing blueprints
     app.register_blueprint(fetch_yahoo_bp)
     app.register_blueprint(pca_bp)
     app.register_blueprint(indicators_bp)
     app.register_blueprint(statistics_bp)
-    app.register_blueprint(prediction_bp)
+    app.register_blueprint(
+    prediction_bp,
+    url_prefix="/prediction"
+)
 
     # Health check (already present)
     @app.route('/api/health', methods=['GET'])
